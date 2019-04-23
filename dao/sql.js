@@ -36,7 +36,11 @@ function setValue(sql) {
 }
 module.exports = {
     getLp(req, res) {
-        const sql = 'SELECT * FROM Lp order by id desc limit 0,1000;';
+        const sql = 'SELECT * FROM lp order by id desc limit 0,100;';
+        getValue(sql, req, res)
+    },
+    getLux(req, res) {
+        const sql = 'SELECT * FROM lux order by id desc limit 0,100;';
         getValue(sql, req, res)
     },
     upDate(req,res){
@@ -44,20 +48,20 @@ module.exports = {
         getValue(sql, req, res)
 
     },
-    setLp(req, res) {
-        const result = req.body;
-        const sql = `INSERT INTO Lp VALUES(
-            NULL,
-            ${result.Lp},
-            ${result.time}
-        )`
-        setValue(sql, req, res);
-    },
     socketLp(data) {
         const result = JSON.parse(data);
         const sql = `INSERT INTO Lp VALUES(
             NULL,
             ${result.Lp},
+            ${result.time}
+        )`
+        setValue(sql);
+    },
+    socketLux(data) {
+        const result = JSON.parse(data);
+        const sql = `INSERT INTO Lux VALUES(
+            NULL,
+            ${result.luminance},
             ${result.time}
         )`
         setValue(sql);

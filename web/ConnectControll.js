@@ -5,8 +5,8 @@ let bodyparser = require('body-parser');
 let receive = new express();
 let client = new express();
 
-receive.use(express.static('./page'));
-client.use(express.static('./page2'));
+receive.use(express.static('./detection'));
+client.use(express.static('./client'));
 
 receive.use(bodyparser.urlencoded({ extended: true }));
 receive.use(bodyparser.json())

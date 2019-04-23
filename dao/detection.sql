@@ -9,6 +9,6 @@ CREATE TABLE Lp(
 );
 CREATE TABLE Lux(
     id INT PRIMARY KEY AUTO_INCREMENT,
-    Lux INT(3),
+    luminance INT(3),
     time BIGINT
 )
