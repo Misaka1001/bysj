@@ -95,7 +95,7 @@ class Chart {
         })
     }
 }
-var lp = new Chart('main','ws://localhost:8082/socketTest', '声音','time','Lp');
+var lp = new Chart('db','ws://localhost:8082/socketTest', '声音','time','Lp');
 lp.load('/data');
 
 var lux = new Chart('lux','ws://localhost:8082/socketLux','亮度','time','luminance')

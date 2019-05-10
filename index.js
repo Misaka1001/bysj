@@ -60,3 +60,4 @@ client.get('/lux',function(req,res){
 //监听端口
 receive.listen('8081');
 client.listen('8082')
+

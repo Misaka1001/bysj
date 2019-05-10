@@ -15,11 +15,12 @@ var str = ""
 function updateWave() {
     var freqByteData = new Uint8Array(analyserNode.frequencyBinCount);
     analyserNode.getByteFrequencyData(freqByteData);
+    console.log(freqByteData)
     var multiplier = analyserNode.frequencyBinCount;
     var sum = freqByteData.reduce((prev, curr) => {
         return prev + curr * curr;
     }, 0)
-    var A1 = Math.sqrt(sum / 64);
+    var A1 = Math.sqrt(sum / multiplier);
     if (A1 < 1) {
         A1 = 1;
     }
