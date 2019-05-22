@@ -12,8 +12,42 @@ function getValue(sql, req, res) {
     pool.getConnection((err, connection) => {
         connection.query(sql, (err, result) => {
             res.json(result);
+        })
+        connection.release();
+    })
+}
+function getVal(sql, req, res) {
+    pool.getConnection((err, connection) => {
+        var results = {};
+        var luxTime = new Promise(function (resolve, reject) {
+            connection.query(sql.luxTime, (err, result) => {
+                results.luxTime = result;
+                resolve()
+            })
+        })
+        var luminance = new Promise(function (resolve, reject) {
+            connection.query(sql.luminance, (err, result) => {
+                results.luminance = result;
+                resolve()
+            })
+        })
+        var LpTime = new Promise(function (resolve, reject) {
+            connection.query(sql.LpTime, (err, result) => {
+                results.LpTime = result;
+                resolve()
+            })
+        })
+        var LpDB = new Promise(function (resolve, reject) {
+            connection.query(sql.LpDB, (err, result) => {
+                results.LpDB = result;
+                resolve()
+            })
+        })
+        Promise.all([luxTime,luminance,LpTime,LpDB]).then(function(){
+            res.json(results);
             connection.release();
         })
+
     })
 }
 //ajax 请求的数据库操作
@@ -43,11 +77,6 @@ module.exports = {
         const sql = 'SELECT * FROM lux order by id desc limit 0,100;';
         getValue(sql, req, res)
     },
-    upDate(req,res){
-        const sql = 'SELECT * FROM Lp order by id desc limit 0,1';
-        getValue(sql, req, res)
-
-    },
     socketLp(data) {
         const result = JSON.parse(data);
         const sql = `INSERT INTO Lp VALUES(
@@ -65,6 +94,19 @@ module.exports = {
             ${result.time}
         )`
         setValue(sql);
+    },
+    getHistoryValue(req, res) {
+        const date = req.query.date;
+        const startDate = new Date(date.split('-').join('/') + ' 00:00:00').getTime();
+        const EndDate = startDate + 86400000;
+        console.log(startDate, EndDate);
+        const sql = {
+            luxTime : `SELECT time FROM lux WHERE time BETWEEN ${startDate} and ${EndDate}`,
+            luminance : `SELECT luminance FROM lux WHERE time BETWEEN ${startDate} and ${EndDate}`,
+            LpTime: `SELECT time FROM Lp WHERE time BETWEEN ${startDate} and ${EndDate}`,
+            LpDB : `SELECT Lp FROM Lp WHERE time BETWEEN ${startDate} and ${EndDate}`
+        }
+        getVal(sql, req, res);
     }
 }
 

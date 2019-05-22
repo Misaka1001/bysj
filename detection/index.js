@@ -11,7 +11,7 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
 var audioContext = new AudioContext();
 var inputPoint = null, zeroGain = null, analyserNode;
 var str = ""
-
+var data = [];
 function updateWave() {
     var freqByteData = new Uint8Array(analyserNode.frequencyBinCount);
     analyserNode.getByteFrequencyData(freqByteData);
@@ -25,14 +25,19 @@ function updateWave() {
         A1 = 1;
     }
     var A0 = 1;
-    var Lp = parseInt(20 * Math.log10(A1 / A0));
+    var Lp = parseInt(20 * Math.log10(A1 / A0)) + 20    ;
     $('#arrlist span:nth-child(2)').html(Lp);
-
+    data.push(Lp);
+    if (data.length === 10) {
+        Lp = Math.max(...data);
+        console.log(Lp);
+        socket.send(JSON.stringify({
+            Lp,
+            time: Date.now()
+        }))
+        data.length = 0;
+    }
     //websocket发送数据
-    socket.send(JSON.stringify({
-        Lp,
-        time: Date.now()
-    }))
 }
 
 var handleSuccess = function (stream) {
@@ -43,7 +48,7 @@ var handleSuccess = function (stream) {
     analyserNode = audioContext.createAnalyser();
     analyserNode.fftSize = 128;
     inputPoint.connect(analyserNode);
-    setInterval(updateWave, 1000)
+    setInterval(updateWave, 100)
 };
 navigator.mediaDevices.getUserMedia({ audio: true, video: false })
     .then(handleSuccess);
@@ -75,7 +80,6 @@ socket2.addEventListener('close', function () {
 });
 //获取亮度
 function getLuminance() {
-    // 点击，canvas画图
     context.drawImage(video, 0, 0, 50, 50);
     var data = [];
     var resultY = [];
